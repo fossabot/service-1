@@ -1,0 +1,56 @@
+account:
+
+    addToGroup
+        (userID, group) -> void
+
+    removeFromGroup
+        (userID, group) -> void
+
+    changeEmail
+        (newEmail) -> send email for verification
+
+    changePassword
+        (oldPassword, newPassword) -> void
+
+    createUser
+        (email, password) -> JWT
+
+    deleteUser
+        (userID) -> void
+
+    verifyEmail
+        Create a OTP and send it to the user so they can click a link to verify themselves.
+
+    authorizeRequest
+
+    login
+        Valdiate email/password and return a JWT
+
+auth:
+
+    createJWT
+        (user, groups) -> JWT
+
+    validateJWT
+        (JWT, accessRequest) -> bool
+        Somewhere needs to be a table that maps groups to allowed accessRequests
+
+    validateRateLimitByIP
+
+email:
+
+    sendMail
+        (address, content) -> sendEMail
+
+iex:
+    request -> gateway -> auth -> gateway -(valid)-> iex -> cache -(hit)-> return
+                                                               -(miss)-> api -> (write to cache) -> return
+
+    getCompanyBySymbol
+        (symbol) -> company
+    getCompanyByName
+        (name) -> company
+    getCompanyByISIN
+        (isin) -> company
+
+

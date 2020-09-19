@@ -3,12 +3,14 @@ package metrics
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/go-kit/kit/metrics"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	"github.com/google/uuid"
 	"github.com/perfolio/service/internal/auth"
 	"github.com/perfolio/service/internal/auth/model"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
-	"time"
 )
 
 type metricsMiddleware struct {
@@ -48,5 +50,16 @@ func (mw metricsMiddleware) CreateUser(ctx context.Context, email string, passwo
 	}(time.Now())
 
 	user, err = mw.next.CreateUser(ctx, email, password)
+	return
+}
+
+func (mw metricsMiddleware) DeleteUser(ctx context.Context, id uuid.UUID) (err error) {
+	defer func(begin time.Time) {
+		lvs := []string{"method", "DeleteUser", "error", fmt.Sprint(err != nil)}
+		mw.requestCount.With(lvs...).Add(1)
+		mw.requestLatency.With(lvs...).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	err = mw.next.DeleteUser(ctx, id)
 	return
 }

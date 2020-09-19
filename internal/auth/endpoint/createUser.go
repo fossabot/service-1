@@ -12,7 +12,7 @@ type CreateUserRequest struct {
 	Password string `json:"password"`
 }
 
-func MakeCreateUserEndpoint(service auth.Service) endpoint.Endpoint {
+func makeCreateUserEndpoint(service auth.Service) endpoint.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
 		request := req.(CreateUserRequest)
 

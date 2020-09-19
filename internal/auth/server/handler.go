@@ -13,10 +13,17 @@ func CreateHandler(endpoints endpoint.Endpoints) http.Handler {
 	r := mux.NewRouter()
 	r.Use(jsonHeader)
 
-	r.Methods("POST").Path("/user").Handler(
+	r.Methods("POST").Path("/user/create").Handler(
 		httptransport.NewServer(
 			endpoints.CreateUser,
 			transport.DecodeCreateUserRequest,
+			transport.EncodeResponse,
+		),
+	)
+	r.Methods("POST").Path("/user/delete").Handler(
+		httptransport.NewServer(
+			endpoints.DeleteUser,
+			transport.DecodeDeleteUserRequest,
 			transport.EncodeResponse,
 		),
 	)
