@@ -4,7 +4,8 @@ import (
 	"github.com/go-kit/kit/log/level"
 	"github.com/perfolio/service/internal/auth"
 	"github.com/perfolio/service/internal/auth/endpoint"
-	serviceMW "github.com/perfolio/service/internal/auth/middleware/service"
+	loggingMW "github.com/perfolio/service/internal/auth/logging"
+	metricsMW "github.com/perfolio/service/internal/auth/metrics"
 	"github.com/perfolio/service/internal/auth/model"
 	"github.com/perfolio/service/internal/auth/repository"
 	"github.com/perfolio/service/internal/auth/server"
@@ -25,7 +26,6 @@ var authCmd = &cobra.Command{
 	Short: "Serves the auth application",
 	Long:  `Run this service on the specified port`,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		logger := logging.New("auth")
 
 		db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
@@ -40,8 +40,8 @@ var authCmd = &cobra.Command{
 		}
 
 		svc := auth.NewService(repository.NewPostgres(db, logger), logger)
-		svc = serviceMW.Logging(logger)(svc)
-		// svc = company.MetricsMiddleware{RequestCount: requestCount, RequestLatency: requestLatency, Next: svc}
+		svc = metricsMW.Use()(svc)
+		svc = loggingMW.Use(logger)(svc)
 
 		endpoints := endpoint.New(svc, logger)
 		handler := server.CreateHandler(endpoints)

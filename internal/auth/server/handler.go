@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/perfolio/service/internal/auth/endpoint"
 	"github.com/perfolio/service/internal/auth/transport"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
 
@@ -19,6 +20,7 @@ func CreateHandler(endpoints endpoint.Endpoints) http.Handler {
 			transport.EncodeResponse,
 		),
 	)
+	r.Methods("GET").Path("/metrics").Handler(promhttp.Handler())
 
 	return r
 }

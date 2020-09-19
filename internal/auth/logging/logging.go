@@ -1,17 +1,17 @@
-package service
+package logging
 
 import (
 	"context"
 
+	"github.com/go-kit/kit/log"
 	"github.com/perfolio/service/internal/auth"
 	"github.com/perfolio/service/internal/auth/model"
-
-	"github.com/go-kit/kit/log"
+	"time"
 )
 
 // LoggingMiddleware takes a logger as a dependency
 // and returns a service Middleware.
-func Logging(logger log.Logger) Middleware {
+func Use(logger log.Logger) auth.Middleware {
 	return func(next auth.Service) auth.Service {
 		return loggingMiddleware{logger, next}
 	}
@@ -23,9 +23,16 @@ type loggingMiddleware struct {
 }
 
 func (mw loggingMiddleware) CreateUser(ctx context.Context, email string, password string) (user model.User, err error) {
-	defer func() {
-		mw.logger.Log("method", "CreateUser", "email", email, "id", user.ID, "err", err)
-	}()
+	logger := log.With(mw.logger, "method", "CreateUser")
+
+	defer func(begin time.Time) {
+		_ = logger.Log(
+			"email", email,
+			"id", user.ID,
+			"err", err,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
 	user, err = mw.next.CreateUser(ctx, email, password)
 	return user, err
 }
