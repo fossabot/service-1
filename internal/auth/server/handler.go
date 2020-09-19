@@ -1,0 +1,24 @@
+package server
+
+import (
+	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/mux"
+	"github.com/perfolio/service/internal/auth/endpoint"
+	"github.com/perfolio/service/internal/auth/transport"
+	"net/http"
+)
+
+func CreateHandler(endpoints endpoint.Endpoints) http.Handler {
+	r := mux.NewRouter()
+	r.Use(jsonHeader)
+
+	r.Methods("POST").Path("/user").Handler(
+		httptransport.NewServer(
+			endpoints.CreateUser,
+			transport.DecodeCreateUserRequest,
+			transport.EncodeResponse,
+		),
+	)
+
+	return r
+}
