@@ -2,9 +2,7 @@ package auth
 
 import (
 	"context"
-
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
+	"go.uber.org/zap"
 	"github.com/google/uuid"
 	"github.com/perfolio/service/internal/auth/model"
 	"github.com/perfolio/service/internal/auth/repository"
@@ -17,10 +15,10 @@ type Service interface {
 
 type service struct {
 	repository repository.Repository
-	logger     log.Logger
+	logger     *zap.Logger
 }
 
-func NewService(repository repository.Repository, logger log.Logger) Service {
+func NewService(repository repository.Repository, logger *zap.Logger) Service {
 	return &service{repository, logger}
 }
 
@@ -28,13 +26,13 @@ func (s *service) CreateUser(ctx context.Context, email string, password string)
 
 	user, err := model.NewUser(email, password)
 	if err != nil {
-		level.Error(s.logger).Log("err", err)
+		s.logger.Error("error", zap.Error(err))
 		return model.User{}, err
 
 	}
 	err = s.repository.CreateUser(ctx, *user)
 	if err != nil {
-		level.Error(s.logger).Log("err", err)
+		s.logger.Error("error", zap.Error(err))
 		return model.User{}, err
 
 	}
@@ -46,7 +44,7 @@ func (s *service) DeleteUser(ctx context.Context, id uuid.UUID) error {
 
 	err := s.repository.DeleteUser(ctx, id)
 	if err != nil {
-		level.Error(s.logger).Log("err", err)
+		s.logger.Error("error", zap.Error(err))
 
 	}
 

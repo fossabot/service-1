@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/go-kit/kit/log/level"
 	"github.com/perfolio/service/internal/auth"
 	"github.com/perfolio/service/internal/auth/endpoint"
 	loggingMW "github.com/perfolio/service/internal/auth/logging"
@@ -9,16 +8,14 @@ import (
 	"github.com/perfolio/service/internal/auth/model"
 	"github.com/perfolio/service/internal/auth/repository"
 	"github.com/perfolio/service/internal/auth/server"
-	"github.com/perfolio/service/pkg/logging"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
-
+	"go.uber.org/zap"
 	"github.com/spf13/cobra"
 )
 
 var port string
-var iexToken string
 
 // authCmd represents the serve command
 var authCmd = &cobra.Command{
@@ -26,16 +23,16 @@ var authCmd = &cobra.Command{
 	Short: "Serves the auth application",
 	Long:  `Run this service on the specified port`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := logging.New("auth")
+		logger := zap.NewExample()
 
 		db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 		if err != nil {
-			level.Error(logger).Log("exit", err)
+			logger.Error("exit", zap.Error(err))
 			os.Exit(-1)
 		}
 		err = db.AutoMigrate(&model.User{})
 		if err != nil {
-			level.Error(logger).Log("exit", err)
+			logger.Error("exit", zap.Error(err))
 			os.Exit(-1)
 		}
 
@@ -43,7 +40,7 @@ var authCmd = &cobra.Command{
 		svc = metricsMW.Use()(svc)
 		svc = loggingMW.Use(logger)(svc)
 
-		endpoints := endpoint.New(svc, logger)
+		endpoints := endpoint.New(svc)
 		handler := server.CreateHandler(endpoints)
 		server.Run(logger, handler, port)
 

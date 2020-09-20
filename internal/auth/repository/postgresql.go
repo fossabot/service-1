@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/go-kit/kit/log"
+	"go.uber.org/zap"
 	"github.com/google/uuid"
 	"github.com/perfolio/service/internal/auth/model"
 	"gorm.io/gorm"
@@ -11,11 +11,11 @@ import (
 
 type postgres struct {
 	db     *gorm.DB
-	logger log.Logger
+	logger *zap.Logger
 }
 
-func NewPostgres(db *gorm.DB, logger log.Logger) Repository {
-	return &postgres{db: db, logger: log.With(logger, "repo", "postgres")}
+func NewPostgres(db *gorm.DB, logger *zap.Logger) Repository {
+	return &postgres{db: db, logger: logger}
 }
 
 func (p *postgres) CreateUser(ctx context.Context, user model.User) error {
