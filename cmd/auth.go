@@ -23,7 +23,7 @@ var authCmd = &cobra.Command{
 	Short: "Serves the auth application",
 	Long:  `Run this service on the specified port`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := zap.NewExample()
+		logger := zap.NewExample().With(zap.String("service", "auth"))
 
 		db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 		if err != nil {
