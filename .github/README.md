@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fperfolio%2Fservice.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fperfolio%2Fservice?ref=badge_shield)
+
 <div align="center">
     <h1 style="padding-bottom:20px;">
         PERFOLIO / SERVICE
@@ -18,3 +20,6 @@
         <img src="https://codecov.io/gh/perfolio/service/branch/master/graph/badge.svg" />
     </a>
 </div>
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fperfolio%2Fservice.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fperfolio%2Fservice?ref=badge_large)
