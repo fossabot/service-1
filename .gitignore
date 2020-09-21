@@ -18,3 +18,5 @@ test.db
 
 
 .vscode/
+
+coverage.txt
