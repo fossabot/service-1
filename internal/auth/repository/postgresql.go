@@ -3,10 +3,16 @@ package repository
 import (
 	"context"
 
+	"errors"
 	"github.com/google/uuid"
 	"github.com/perfolio/service/internal/auth/model"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"time"
+)
+
+var (
+	ERR_EMAIL_NOT_CHANGED = errors.New("New email must not be the same as the old email")
 )
 
 type postgres struct {
@@ -44,7 +50,25 @@ func (p *postgres) ChangeEmail(ctx context.Context, id uuid.UUID, newEmail strin
 		return err
 	}
 
-	err = p.db.Model(&user).Updates(model.User{Email: newEmail, ConfirmedAt: nil}).Error
+	if user.Email == newEmail {
+		p.logger.Error(ERR_EMAIL_NOT_CHANGED.Error(), zap.String("id", id.String()))
+		return ERR_EMAIL_NOT_CHANGED
+	}
+
+	err = p.db.Model(&user).Updates(map[string]interface{}{"Email": newEmail, "ConfirmedAt": nil}).Error
+	if err != nil {
+		p.logger.Error("Could not update user", zap.String("id", id.String()))
+		return err
+	}
+	return nil
+
+}
+
+func (p *postgres) ConfirmEmail(ctx context.Context, id uuid.UUID) error {
+
+	now := time.Now()
+
+	err := p.db.Model(&model.User{}).Where("ID = ? ", id).Update("ConfirmedAt", &now).Error
 	if err != nil {
 		p.logger.Error("Could not update user", zap.String("id", id.String()))
 		return err

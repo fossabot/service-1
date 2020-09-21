@@ -34,6 +34,13 @@ func CreateHandler(endpoints endpoint.Endpoints) http.Handler {
 			transport.EncodeResponse,
 		),
 	)
+	r.Methods("POST").Path("/user/confirm-email").Handler(
+		httptransport.NewServer(
+			endpoints.ConfirmEmail,
+			transport.DecodeConfirmEmailRequest,
+			transport.EncodeResponse,
+		),
+	)
 	r.Methods("GET").Path("/metrics").Handler(promhttp.Handler())
 
 	return r

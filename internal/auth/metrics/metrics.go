@@ -74,3 +74,14 @@ func (mw metricsMiddleware) ChangeEmail(ctx context.Context, id uuid.UUID, newEm
 	err = mw.next.ChangeEmail(ctx, id, newEmail)
 	return
 }
+
+func (mw metricsMiddleware) ConfirmEmail(ctx context.Context, id uuid.UUID) (err error) {
+	defer func(begin time.Time) {
+		lvs := []string{"method", "ConfirmEmail", "error", fmt.Sprint(err != nil)}
+		mw.requestCount.With(lvs...).Add(1)
+		mw.requestLatency.With(lvs...).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	err = mw.next.ConfirmEmail(ctx, id)
+	return
+}

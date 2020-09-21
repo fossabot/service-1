@@ -67,3 +67,18 @@ func (mw loggingMiddleware) ChangeEmail(ctx context.Context, id uuid.UUID, newEm
 	err = mw.next.ChangeEmail(ctx, id, newEmail)
 	return
 }
+
+func (mw loggingMiddleware) ConfirmEmail(ctx context.Context, id uuid.UUID) (err error) {
+	logger := mw.logger.With(zap.String("method", "ConfirmEmail"))
+
+	defer func(begin time.Time) {
+		logger.Info(
+			"changed email",
+			zap.String("id", id.String()),
+			zap.Error(err),
+			zap.Duration("took", time.Since(begin)),
+		)
+	}(time.Now())
+	err = mw.next.ConfirmEmail(ctx, id)
+	return
+}
