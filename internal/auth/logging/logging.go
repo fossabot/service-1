@@ -2,11 +2,11 @@ package logging
 
 import (
 	"context"
-	"time"
-	"go.uber.org/zap"
 	"github.com/google/uuid"
 	"github.com/perfolio/service/internal/auth"
 	"github.com/perfolio/service/internal/auth/model"
+	"go.uber.org/zap"
+	"time"
 )
 
 // LoggingMiddleware takes a logger as a dependency
@@ -44,11 +44,26 @@ func (mw loggingMiddleware) DeleteUser(ctx context.Context, id uuid.UUID) (err e
 	defer func(begin time.Time) {
 		logger.Info(
 			"Deleted user",
-zap.String(			"id", id.String()),
+			zap.String("id", id.String()),
 			zap.Error(err),
 			zap.Duration("took", time.Since(begin)),
 		)
 	}(time.Now())
 	err = mw.next.DeleteUser(ctx, id)
+	return
+}
+
+func (mw loggingMiddleware) ChangeEmail(ctx context.Context, id uuid.UUID, newEmail string) (err error) {
+	logger := mw.logger.With(zap.String("method", "ChangeEmail"))
+
+	defer func(begin time.Time) {
+		logger.Info(
+			"changed email",
+			zap.String("id", id.String()),
+			zap.Error(err),
+			zap.Duration("took", time.Since(begin)),
+		)
+	}(time.Now())
+	err = mw.next.ChangeEmail(ctx, id, newEmail)
 	return
 }

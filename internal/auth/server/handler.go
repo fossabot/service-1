@@ -27,6 +27,13 @@ func CreateHandler(endpoints endpoint.Endpoints) http.Handler {
 			transport.EncodeResponse,
 		),
 	)
+	r.Methods("POST").Path("/user/change-email").Handler(
+		httptransport.NewServer(
+			endpoints.ChangeEmail,
+			transport.DecodeChangeEmailRequest,
+			transport.EncodeResponse,
+		),
+	)
 	r.Methods("GET").Path("/metrics").Handler(promhttp.Handler())
 
 	return r

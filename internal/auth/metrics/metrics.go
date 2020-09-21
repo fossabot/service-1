@@ -63,3 +63,14 @@ func (mw metricsMiddleware) DeleteUser(ctx context.Context, id uuid.UUID) (err e
 	err = mw.next.DeleteUser(ctx, id)
 	return
 }
+
+func (mw metricsMiddleware) ChangeEmail(ctx context.Context, id uuid.UUID, newEmail string) (err error) {
+	defer func(begin time.Time) {
+		lvs := []string{"method", "ChangeEmail", "error", fmt.Sprint(err != nil)}
+		mw.requestCount.With(lvs...).Add(1)
+		mw.requestLatency.With(lvs...).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	err = mw.next.ChangeEmail(ctx, id, newEmail)
+	return
+}

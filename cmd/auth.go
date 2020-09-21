@@ -8,11 +8,11 @@ import (
 	"github.com/perfolio/service/internal/auth/model"
 	"github.com/perfolio/service/internal/auth/repository"
 	"github.com/perfolio/service/internal/auth/server"
+	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
-	"go.uber.org/zap"
-	"github.com/spf13/cobra"
 )
 
 var port string

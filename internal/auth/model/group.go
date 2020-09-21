@@ -13,9 +13,6 @@ type Group struct {
 	Name string `json:"name" gorm:"unique"`
 }
 
-
-
-
 func NewGroup(name string, uuid UUID, time Time) (Group, error) {
 	return Group{
 		ID:        uuid.New(),
